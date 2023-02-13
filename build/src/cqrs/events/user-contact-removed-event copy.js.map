@@ -1,0 +1,1 @@
+{"version":3,"file":"user-contact-removed-event copy.js","sourceRoot":"","sources":["../../../../src/cqrs/events/user-contact-removed-event copy.ts"],"names":[],"mappings":";;;AAAA,mCAAgC;AAEhC,MAAa,uBAAwB,SAAQ,aAAK;IAChD,YACW,WAAmB,EACnB,cAAsB;QAE/B,KAAK,EAAE,CAAC;QAHC,gBAAW,GAAX,WAAW,CAAQ;QACnB,mBAAc,GAAd,cAAc,CAAQ;IAGjC,CAAC;CACF;AAPD,0DAOC"}

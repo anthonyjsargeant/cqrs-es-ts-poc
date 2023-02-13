@@ -1,0 +1,1 @@
+{"version":3,"file":"user-address-removed-event.js","sourceRoot":"","sources":["../../../../src/cqrs/events/user-address-removed-event.ts"],"names":[],"mappings":";;;AAAA,mCAAgC;AAEhC,MAAa,uBAAwB,SAAQ,aAAK;IAChD,YACW,IAAY,EACZ,MAAc,EACd,QAAgB;QAEzB,KAAK,EAAE,CAAC;QAJC,SAAI,GAAJ,IAAI,CAAQ;QACZ,WAAM,GAAN,MAAM,CAAQ;QACd,aAAQ,GAAR,QAAQ,CAAQ;IAG3B,CAAC;CACF;AARD,0DAQC"}

@@ -1,0 +1,1 @@
+{"version":3,"file":"user-contact-added-event.js","sourceRoot":"","sources":["../../../../src/cqrs/events/user-contact-added-event.ts"],"names":[],"mappings":";;;AAAA,mCAAgC;AAEhC,MAAa,qBAAsB,SAAQ,aAAK;IAC9C,YACW,WAAmB,EACnB,cAAsB;QAE/B,KAAK,EAAE,CAAC;QAHC,gBAAW,GAAX,WAAW,CAAQ;QACnB,mBAAc,GAAd,cAAc,CAAQ;IAGjC,CAAC;CACF;AAPD,sDAOC"}
