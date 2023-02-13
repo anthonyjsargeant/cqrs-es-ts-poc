@@ -35,9 +35,6 @@ describe('CQRS Application', () => {
 
     projector.project(userId, events);
 
-    const newYork = new Address('New York', 'NY', '10001');
-    const losAngeles = new Address('Los Angeles', 'CA', '90001');
-
     const addresses: Set<Address> = new Set([ 
       new Address('New York', 'NY', '10001'),
       new Address('Los Angeles', 'CA', '90001')
