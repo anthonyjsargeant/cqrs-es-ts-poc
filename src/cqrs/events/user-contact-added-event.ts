@@ -6,5 +6,6 @@ export class UserContactAddedEvent extends Event {
     readonly contactDetails: string,
   ) {
     super();
+    this.type = 'UserContactAddedEvent';
   }
 }

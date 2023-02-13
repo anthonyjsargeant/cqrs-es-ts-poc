@@ -7,5 +7,6 @@ export class UserAddressAddedEvent extends Event {
     readonly postcode: string
   ) {
     super();
+    this.type = 'UserAddressAddedEvent';
   }
 }

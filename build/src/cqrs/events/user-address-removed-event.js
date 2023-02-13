@@ -8,6 +8,7 @@ class UserAddressRemovedEvent extends event_1.Event {
         this.city = city;
         this.county = county;
         this.postcode = postcode;
+        this.type = 'UserAddressRemovedEvent';
     }
 }
 exports.UserAddressRemovedEvent = UserAddressRemovedEvent;

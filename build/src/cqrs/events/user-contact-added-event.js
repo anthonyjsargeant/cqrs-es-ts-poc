@@ -7,6 +7,7 @@ class UserContactAddedEvent extends event_1.Event {
         super();
         this.contactType = contactType;
         this.contactDetails = contactDetails;
+        this.type = 'UserContactAddedEvent';
     }
 }
 exports.UserContactAddedEvent = UserContactAddedEvent;

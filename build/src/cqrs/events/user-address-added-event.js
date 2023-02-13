@@ -8,6 +8,7 @@ class UserAddressAddedEvent extends event_1.Event {
         this.city = city;
         this.county = county;
         this.postcode = postcode;
+        this.type = 'UserAddressAddedEvent';
     }
 }
 exports.UserAddressAddedEvent = UserAddressAddedEvent;

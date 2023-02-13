@@ -6,6 +6,7 @@ class Event {
     constructor() {
         this.id = (0, uuid_1.v4)();
         this.created = new Date();
+        this.type = 'Event';
     }
 }
 exports.Event = Event;
