@@ -40,15 +40,15 @@ export class UserAggregate {
   }
 
   private removeContacts(command: UpdateUserCommand, user: User, events: Event[]): void {
-    const contactsToRemove: Set<Contact> = new Set();
+    const contactsToRemove: Contact[] = [];
 
     command.contacts.forEach((contact) => {
-      const found = _.find(Array.from(user.contacts), (c) => {
+      const found = _.find(user.contacts, (c) => {
         return c.contactType === contact.contactType &&
           c.contactDetail === contact.contactDetail;
       });
       if (!found) {
-        contactsToRemove.add(contact);
+        contactsToRemove.push(contact);
       }
     });
 
@@ -60,15 +60,15 @@ export class UserAggregate {
   }
 
   private addContacts(command: UpdateUserCommand, user: User, events: Event[]): void {
-    const contactsToAdd: Set<Contact> = new Set();
+    const contactsToAdd: Contact[] = [];
 
     command.contacts.forEach((contact) => {
-      const found = _.find(Array.from(user.contacts), (c) => {
+      const found = _.find(user.contacts, (c) => {
         return c.contactType === contact.contactType &&
           c.contactDetail === contact.contactDetail;
       });
       if (!found) {
-        contactsToAdd.add(contact);
+        contactsToAdd.push(contact);
       }
     });
 
@@ -80,16 +80,16 @@ export class UserAggregate {
   }
 
   private removeAddresses(command: UpdateUserCommand, user: User, events: Event[]): void {
-    const addressesToRemove: Set<Address> = new Set();
+    const addressesToRemove: Address[] = [];
 
     command.addresses.forEach((address) => {
-      const found = _.find(Array.from(user.addresses), (a) => {
+      const found = _.find(user.addresses, (a) => {
         return a.city === address.city &&
           a.county === address.county &&
           a.postcode === address.postcode;
       });
       if (!found) {
-        addressesToRemove.add(address);
+        addressesToRemove.push(address);
       }
     });
 
@@ -101,16 +101,16 @@ export class UserAggregate {
   }
 
   private addAddresses(command: UpdateUserCommand, user: User, events: Event[]): void {
-    const addressesToAdd: Set<Address> = new Set();
+    const addressesToAdd: Address[] = [];
 
     command.addresses.forEach((address) => {
-      const found = _.find(Array.from(user.addresses), (a) => {
+      const found = _.find(user.addresses, (a) => {
         return a.city === address.city &&
           a.county === address.county &&
           a.postcode === address.postcode;
       });
       if (!found) {
-        addressesToAdd.add(address);
+        addressesToAdd.push(address);
       }
     });
 

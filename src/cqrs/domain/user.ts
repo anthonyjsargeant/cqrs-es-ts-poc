@@ -2,9 +2,9 @@ import { Address } from './address';
 import { Contact } from './contact';
 
 export class User {
-  contacts: Set<Contact> = new Set();
-  addresses: Set<Address> = new Set();
-  
+  contacts: Contact[] = [];
+  addresses: Address[] = [];
+
   constructor(
     readonly userId: string,
     readonly firstName: string,

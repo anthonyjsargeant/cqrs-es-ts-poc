@@ -1,14 +1,14 @@
-import { User } from '../domain/user';
-import { v4 as uuidv4 } from 'uuid';
-import { Event } from '../events/event';
-import { UserCreatedEvent } from '../events/user-created-event';
-import { UserAddressAddedEvent } from '../events/user-address-added-event';
-import { Address } from '../domain/address';
-import { UserAddressRemovedEvent } from '../events/user-address-removed-event';
-import { UserContactAddedEvent } from '../events/user-contact-added-event';
-import { Contact } from '../domain/contact';
-import { UserContactRemovedEvent } from '../events/user-contact-removed-event';
-import { EventStore } from '../events/store/event-store';
+import {User} from '../domain/user';
+import {v4 as uuidv4} from 'uuid';
+import {Event} from '../events/event';
+import {UserCreatedEvent} from '../events/user-created-event';
+import {UserAddressAddedEvent} from '../events/user-address-added-event';
+import {Address} from '../domain/address';
+import {UserAddressRemovedEvent} from '../events/user-address-removed-event';
+import {UserContactAddedEvent} from '../events/user-contact-added-event';
+import {Contact} from '../domain/contact';
+import {UserContactRemovedEvent} from '../events/user-contact-removed-event';
+import {EventStore} from '../events/store/event-store';
 import * as _ from 'lodash';
 
 export const recreateUserState = (store: EventStore, userId: string): User | undefined => {
@@ -30,8 +30,7 @@ export const recreateUserState = (store: EventStore, userId: string): User | und
         userAddressAddedEvent.postcode
       );
       if (user) {
-        const updatedAddresses = _.union(Array.from(user.addresses), [address]);
-        user.addresses = new Set(updatedAddresses);
+        user.addresses = _.union(user.addresses, [address]);
       }
     }
 
@@ -42,12 +41,11 @@ export const recreateUserState = (store: EventStore, userId: string): User | und
         userAddressRemovedEvent.county,
         userAddressRemovedEvent.postcode);
       if (user) {
-        const updatedAddresses = _.remove(Array.from(user.addresses), (a) => {
+        user.addresses = _.remove(user.addresses, (a) => {
           return a.city === address.city &&
             a.county === address.county &&
             a.postcode === address.postcode;
         });
-        user.addresses = new Set(updatedAddresses);
       }
     }
 
@@ -57,8 +55,7 @@ export const recreateUserState = (store: EventStore, userId: string): User | und
         userContactAddedEvent.contactType,
         userContactAddedEvent.contactDetails);
       if (user) {
-        const updatedContacts = _.union(Array.from(user.contacts), [contact]);
-        user.contacts = new Set(updatedContacts);
+        user.contacts = _.union(user.contacts, [contact]);
       }
     }
 
@@ -68,10 +65,9 @@ export const recreateUserState = (store: EventStore, userId: string): User | und
         userContactRemovedEvent.contactType,
         userContactRemovedEvent.contactDetails);
       if (user) {
-        const updatedContacts = _.remove(Array.from(user.contacts), (c) => {
+        user.contacts = _.remove(user.contacts, (c) => {
           return (c.contactType === contact.contactType) && (c.contactDetail === contact.contactDetail);
         });
-        user.contacts = new Set(updatedContacts);
       }
     }
   });

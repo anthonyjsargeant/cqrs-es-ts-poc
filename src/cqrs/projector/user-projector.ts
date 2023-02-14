@@ -35,13 +35,13 @@ export class UserProjector {
   private applyUserAddressAddedEvent(userId: string, event: UserAddressAddedEvent): void {
     const address = new Address(event.city, event.county, event.postcode);
     const userAddress = this.userReadRepository.getUserAddress(userId) || new UserAddress();
-    const addresses = userAddress.addressByRegion.get(address.county) || new Set();
-    const updatedAddresses = _.unionWith(Array.from(addresses), [address], (a, b) => {
+    const addresses = userAddress.addressByRegion.get(address.county) || [];
+    const updatedAddresses = _.unionWith(addresses, [address], (a, b) => {
       return a.city === b.city &&
         a.county === b.county &&
         a.postcode === b.postcode;
     });
-    userAddress.addressByRegion.set(address.county, new Set(updatedAddresses));
+    userAddress.addressByRegion.set(address.county, updatedAddresses);
     this.userReadRepository.addUserAddress(userId, userAddress);
   }
 
@@ -51,12 +51,12 @@ export class UserProjector {
     if (userAddress) {
       const addresses = userAddress.addressByRegion.get(address.county);
       if (addresses) {
-        const updatedAddresses = _.remove(Array.from(addresses), (a) => {
+        const updatedAddresses = _.remove(addresses, (a) => {
           return a.city === address.city &&
             a.county === address.county &&
             a.postcode === address.postcode;
         });
-        userAddress.addressByRegion.set(event.county, new Set(updatedAddresses));
+        userAddress.addressByRegion.set(event.county, updatedAddresses);
       }
       this.userReadRepository.addUserAddress(userId, userAddress);
     }
@@ -65,12 +65,12 @@ export class UserProjector {
   private applyUserContactAddedEvent(userId: string, event: UserContactAddedEvent): void {
     const contact = new Contact(event.contactType, event.contactDetails);
     const userContact = this.userReadRepository.getUserContact(userId) || new UserContact();
-    const contacts = userContact.contactByType.get(contact.contactType) || new Set();
-    const updatedContacts = _.unionWith(Array.from(contacts), [contact], (a, b) => {
+    const contacts = userContact.contactByType.get(contact.contactType) || [];
+    const updatedContacts = _.unionWith(contacts, [contact], (a, b) => {
       return a.contactType === b.contactType &&
         a.contactDetail === b.contactDetail;
     });
-    userContact.contactByType.set(contact.contactType, new Set(updatedContacts));
+    userContact.contactByType.set(contact.contactType, updatedContacts);
     this.userReadRepository.addUserContact(userId, userContact);
   }
 
@@ -80,11 +80,11 @@ export class UserProjector {
     if (userContact) {
       const contacts = userContact.contactByType.get(contact.contactType);
       if (contacts) {
-        const updatedContacts = _.remove(Array.from(contacts), (c) => {
+        const updatedContacts = _.remove(contacts, (c) => {
           return c.contactType === contact.contactType &&
             c.contactDetail === contact.contactDetail;
         });
-        userContact.contactByType.set(contact.contactType, new Set(updatedContacts));
+        userContact.contactByType.set(contact.contactType, updatedContacts);
       }
       this.userReadRepository.addUserContact(userId, userContact);
     }

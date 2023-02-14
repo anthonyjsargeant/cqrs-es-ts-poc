@@ -9,12 +9,12 @@ export class UserProjection {
     readonly userReadRepository: UserReadRepository
   ) {}
 
-  public handleContactByTypeQuery(query: ContactByTypeQuery): Set<Contact> | undefined {
+  public handleContactByTypeQuery(query: ContactByTypeQuery): Contact[] | undefined {
     const userContact = this.userReadRepository.getUserContact(query.userId);
     return userContact?.contactByType.get(query.contactType);
   }
 
-  public handleAddressByRegionQuery(query: AddressByRegionQuery): Set<Address> | undefined {
+  public handleAddressByRegionQuery(query: AddressByRegionQuery): Address[] | undefined {
     const userAddress = this.userReadRepository.getUserAddress(query.userId);
     return userAddress?.addressByRegion.get(query.county);
   }

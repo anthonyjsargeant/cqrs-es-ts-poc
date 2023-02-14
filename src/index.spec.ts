@@ -37,40 +37,40 @@ describe('CQRS Application', () => {
 
     const firstUpdateUserCommand = new UpdateUserCommand(
       userId,
-      new Set([
+      [
         new Address('New York', 'NY', '10001'),
         new Address('Los Angeles', 'CA', '90001')
-      ]),
-      new Set([
+      ],
+      [
         new Contact('EMAIL', 'tom.sawyer@gmail.com'),
         new Contact('EMAIL', 'tom.sawyer@rediff.com')
-      ]));
+      ]);
     events.push(...userAggregate.handleUpdateUserCommand(firstUpdateUserCommand));
     projector.project(userId, events);
 
     const secondUpdateUserCommand = new UpdateUserCommand(
       userId,
-      new Set([
+      [
         new Address('New York', 'NY', '10001'),
         new Address('Houston', 'TX', '77001')
-      ]),
-      new Set([
+      ],
+      [
         new Contact('EMAIL', 'tom.sawyer@gmail.com'),
         new Contact('PHONE', '555-555-1010')
-      ]));
+      ]);
     events.push(...userAggregate.handleUpdateUserCommand(secondUpdateUserCommand));
     projector.project(userId, events);
 
     const contactByTypeQuery = new ContactByTypeQuery(userId, 'EMAIL');
-    expect(Array.from(userProjection.handleContactByTypeQuery(contactByTypeQuery) || new Set()))
-      .toIncludeSameMembers(Array.from(new Set([
+    expect(userProjection.handleContactByTypeQuery(contactByTypeQuery) || [])
+      .toIncludeSameMembers([
         new Contact('EMAIL', 'tom.sawyer@gmail.com')
-      ])));
+      ]);
 
     const addressByRegionQuery = new AddressByRegionQuery(userId, 'NY');
-    expect(Array.from(userProjection.handleAddressByRegionQuery(addressByRegionQuery) || new Set()))
-      .toIncludeSameMembers(Array.from(new Set([
+    expect(userProjection.handleAddressByRegionQuery(addressByRegionQuery) || [])
+      .toIncludeSameMembers([
         new Address('New York', 'NY', '10001')
-      ])));
+      ]);
   });
 });
