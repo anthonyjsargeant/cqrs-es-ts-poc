@@ -11,6 +11,7 @@ import { Address } from '../domain/address';
 import { UserAddressRemovedEvent } from '../events/user-address-removed-event';
 import { UserContactAddedEvent } from '../events/user-contact-added-event';
 import { UserAddressAddedEvent } from '../events/user-address-added-event';
+import * as _ from 'lodash';
 
 export class UserAggregate {
   constructor(
@@ -29,53 +30,66 @@ export class UserAggregate {
     const events: Event[] = [];
 
     if (user) {
-      this.removeContacts(command, user, events);
       this.addContacts(command, user, events);
-      this.removeAddresses(command, user, events);
       this.addAddresses(command, user, events);
+      this.removeContacts(command, user, events);
+      this.removeAddresses(command, user, events);
     }
 
     return events;
   }
 
   private removeContacts(command: UpdateUserCommand, user: User, events: Event[]): void {
-    const contactsToRemove: Contact[] = [];
-    
-    user.contacts.forEach((contact) => {
-      if (!command.contacts.has(contact)) {
-        contactsToRemove.push(contact);
+    const contactsToRemove: Set<Contact> = new Set();
+
+    command.contacts.forEach((contact) => {
+      const found = _.find(Array.from(user.contacts), (c) => {
+        return c.contactType === contact.contactType &&
+          c.contactDetail === contact.contactDetail;
+      });
+      if (!found) {
+        contactsToRemove.add(contact);
       }
     });
 
     contactsToRemove.forEach((contact) => {
-      const userContactRemovedEvent = new UserContactRemovedEvent(contact.type, contact.detail);
+      const userContactRemovedEvent = new UserContactRemovedEvent(contact.contactType, contact.contactDetail);
       events.push(userContactRemovedEvent);
       this.eventStore.addEvent(command.userId, userContactRemovedEvent);
     });
   }
 
   private addContacts(command: UpdateUserCommand, user: User, events: Event[]): void {
-    const contactsToAdd: Contact[] = [];
-    
-    user.contacts.forEach((contact) => {
-      if (!command.contacts.has(contact)) {
-        contactsToAdd.push(contact);
+    const contactsToAdd: Set<Contact> = new Set();
+
+    command.contacts.forEach((contact) => {
+      const found = _.find(Array.from(user.contacts), (c) => {
+        return c.contactType === contact.contactType &&
+          c.contactDetail === contact.contactDetail;
+      });
+      if (!found) {
+        contactsToAdd.add(contact);
       }
     });
 
     contactsToAdd.forEach((contact) => {
-      const userContactAddedEvent = new UserContactAddedEvent(contact.type, contact.detail);
+      const userContactAddedEvent = new UserContactAddedEvent(contact.contactType, contact.contactDetail);
       events.push(userContactAddedEvent);
       this.eventStore.addEvent(command.userId, userContactAddedEvent);
     });
   }
 
   private removeAddresses(command: UpdateUserCommand, user: User, events: Event[]): void {
-    const addressesToRemove: Address[] = [];  
-    
-    user.addresses.forEach((address) => {
-      if (!command.addresses.has(address)) {
-        addressesToRemove.push(address);
+    const addressesToRemove: Set<Address> = new Set();
+
+    command.addresses.forEach((address) => {
+      const found = _.find(Array.from(user.addresses), (a) => {
+        return a.city === address.city &&
+          a.county === address.county &&
+          a.postcode === address.postcode;
+      });
+      if (!found) {
+        addressesToRemove.add(address);
       }
     });
 
@@ -87,15 +101,20 @@ export class UserAggregate {
   }
 
   private addAddresses(command: UpdateUserCommand, user: User, events: Event[]): void {
-    const addessesToAdd: Address[] = [];  
-    
-    user.addresses.forEach((address) => {
-      if (!command.addresses.has(address)) {
-        addessesToAdd.push(address);
+    const addressesToAdd: Set<Address> = new Set();
+
+    command.addresses.forEach((address) => {
+      const found = _.find(Array.from(user.addresses), (a) => {
+        return a.city === address.city &&
+          a.county === address.county &&
+          a.postcode === address.postcode;
+      });
+      if (!found) {
+        addressesToAdd.add(address);
       }
     });
 
-    addessesToAdd.forEach((address) => {
+    addressesToAdd.forEach((address) => {
       const userAddressAddedEvent = new UserAddressAddedEvent(address.city, address.county, address.postcode);
       events.push(userAddressAddedEvent);
       this.eventStore.addEvent(command.userId, userAddressAddedEvent);

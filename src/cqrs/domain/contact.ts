@@ -1,6 +1,6 @@
 export class Contact {
   constructor(
-    readonly type: string,
-    readonly detail: string,
+    readonly contactType: string,
+    readonly contactDetail: string,
   ) {}
 }

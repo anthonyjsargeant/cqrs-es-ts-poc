@@ -9,6 +9,7 @@ import { UserContactAddedEvent } from '../events/user-contact-added-event';
 import { Contact } from '../domain/contact';
 import { UserContactRemovedEvent } from '../events/user-contact-removed-event';
 import { EventStore } from '../events/store/event-store';
+import * as _ from 'lodash';
 
 export const recreateUserState = (store: EventStore, userId: string): User | undefined => {
   let user: User | undefined = undefined;
@@ -29,7 +30,8 @@ export const recreateUserState = (store: EventStore, userId: string): User | und
         userAddressAddedEvent.postcode
       );
       if (user) {
-        user.addresses.add(address);
+        const updatedAddresses = _.union(Array.from(user.addresses), [address]);
+        user.addresses = new Set(updatedAddresses);
       }
     }
 
@@ -40,7 +42,12 @@ export const recreateUserState = (store: EventStore, userId: string): User | und
         userAddressRemovedEvent.county,
         userAddressRemovedEvent.postcode);
       if (user) {
-        user.addresses.delete(address);
+        const updatedAddresses = _.remove(Array.from(user.addresses), (a) => {
+          return a.city === address.city &&
+            a.county === address.county &&
+            a.postcode === address.postcode;
+        });
+        user.addresses = new Set(updatedAddresses);
       }
     }
 
@@ -50,7 +57,8 @@ export const recreateUserState = (store: EventStore, userId: string): User | und
         userContactAddedEvent.contactType,
         userContactAddedEvent.contactDetails);
       if (user) {
-        user.contacts.add(contact);
+        const updatedContacts = _.union(Array.from(user.contacts), [contact]);
+        user.contacts = new Set(updatedContacts);
       }
     }
 
@@ -60,7 +68,10 @@ export const recreateUserState = (store: EventStore, userId: string): User | und
         userContactRemovedEvent.contactType,
         userContactRemovedEvent.contactDetails);
       if (user) {
-        user.contacts.delete(contact);
+        const updatedContacts = _.remove(Array.from(user.contacts), (c) => {
+          return (c.contactType === contact.contactType) && (c.contactDetail === contact.contactDetail);
+        });
+        user.contacts = new Set(updatedContacts);
       }
     }
   });

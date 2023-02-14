@@ -1,15 +1,16 @@
-import { v4 as uuidv4 } from 'uuid';
-import { CreateUserCommand } from './cqrs/command/create-user-command';
-import { UpdateUserCommand } from './cqrs/command/update-user-command';
-import { Address } from './cqrs/domain/address';
-import { Contact } from './cqrs/domain/contact';
-import { AddressByRegionQuery } from './cqrs/query/address-by-region-query';
-import { ContactByTypeQuery } from './cqrs/query/contact-by-type-query';
-import { UserProjector } from './cqrs/projector/user-projector';
-import { EventStore } from './cqrs/events/store/event-store';
-import { UserAggregate } from './cqrs/aggregate/user-aggregate';
-import { UserProjection } from './cqrs/query/projection/user-projection';
-import { UserReadRepository } from './cqrs/repository/user-read-repository';
+import {v4 as uuidv4} from 'uuid';
+import {CreateUserCommand} from './cqrs/command/create-user-command';
+import {UpdateUserCommand} from './cqrs/command/update-user-command';
+import {Address} from './cqrs/domain/address';
+import {Contact} from './cqrs/domain/contact';
+import {AddressByRegionQuery} from './cqrs/query/address-by-region-query';
+import {ContactByTypeQuery} from './cqrs/query/contact-by-type-query';
+import {UserProjector} from './cqrs/projector/user-projector';
+import {EventStore} from './cqrs/events/store/event-store';
+import {UserAggregate} from './cqrs/aggregate/user-aggregate';
+import {UserProjection} from './cqrs/query/projection/user-projection';
+import {UserReadRepository} from './cqrs/repository/user-read-repository';
+import 'jest-extended';
 
 describe('CQRS Application', () => {
 
@@ -34,40 +35,42 @@ describe('CQRS Application', () => {
 
     projector.project(userId, events);
 
-    let updateUserCommand = new UpdateUserCommand(
+    const firstUpdateUserCommand = new UpdateUserCommand(
       userId,
-      new Set([ 
+      new Set([
         new Address('New York', 'NY', '10001'),
         new Address('Los Angeles', 'CA', '90001')
-      ]), 
+      ]),
       new Set([
         new Contact('EMAIL', 'tom.sawyer@gmail.com'),
         new Contact('EMAIL', 'tom.sawyer@rediff.com')
       ]));
-    events.push(...userAggregate.handleUpdateUserCommand(updateUserCommand));
+    events.push(...userAggregate.handleUpdateUserCommand(firstUpdateUserCommand));
     projector.project(userId, events);
 
-    updateUserCommand = new UpdateUserCommand(
+    const secondUpdateUserCommand = new UpdateUserCommand(
       userId,
-      new Set([ 
+      new Set([
         new Address('New York', 'NY', '10001'),
         new Address('Houston', 'TX', '77001')
-      ]), 
+      ]),
       new Set([
         new Contact('EMAIL', 'tom.sawyer@gmail.com'),
         new Contact('PHONE', '555-555-1010')
       ]));
-    events.push(...userAggregate.handleUpdateUserCommand(updateUserCommand));
+    events.push(...userAggregate.handleUpdateUserCommand(secondUpdateUserCommand));
     projector.project(userId, events);
 
     const contactByTypeQuery = new ContactByTypeQuery(userId, 'EMAIL');
-    expect(userProjection.handleContactByTypeQuery(contactByTypeQuery)).toStrictEqual(new Set([
-      new Contact('EMAIL', 'tom.sawyer@gmail.com')
-    ]));
+    expect(Array.from(userProjection.handleContactByTypeQuery(contactByTypeQuery) || new Set()))
+      .toIncludeSameMembers(Array.from(new Set([
+        new Contact('EMAIL', 'tom.sawyer@gmail.com')
+      ])));
 
     const addressByRegionQuery = new AddressByRegionQuery(userId, 'NY');
-    expect(userProjection.handleAddressByRegionQuery(addressByRegionQuery)).toStrictEqual(new Set([
-      new Address('New York', 'NY', '10001')
-    ]));
+    expect(Array.from(userProjection.handleAddressByRegionQuery(addressByRegionQuery) || new Set()))
+      .toIncludeSameMembers(Array.from(new Set([
+        new Address('New York', 'NY', '10001')
+      ])));
   });
 });
