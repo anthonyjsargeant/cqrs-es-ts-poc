@@ -7,6 +7,7 @@ import { Address } from '../domain/address';
 import { UserAddress } from '../query/model/user-address';
 import { Contact } from '../domain/contact';
 import { UserContact } from '../query/model/user-contact';
+import { UserAddressRemovedEvent } from '../events/user-address-removed-event';
 
 export class UserProjector {
   constructor(

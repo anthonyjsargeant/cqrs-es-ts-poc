@@ -8,11 +8,12 @@ import { UserAddressRemovedEvent } from '../events/user-address-removed-event';
 import { UserContactAddedEvent } from '../events/user-contact-added-event';
 import { Contact } from '../domain/contact';
 import { UserContactRemovedEvent } from '../events/user-contact-removed-event';
+import { EventStore } from '../events/store/event-store';
 
 export const recreateUserState = (store: EventStore, userId: string): User | undefined => {
   let user: User | undefined = undefined;
 
-  const events = store.eventStore.get(userId);
+  const events = store.eventStore.get(userId) || [];
 
   events.forEach((event: Event) => {
     if (event.type === 'UserCreatedEvent') {

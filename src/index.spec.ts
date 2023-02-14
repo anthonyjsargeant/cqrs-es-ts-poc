@@ -5,7 +5,6 @@ import { Address } from './cqrs/domain/address';
 import { Contact } from './cqrs/domain/contact';
 import { AddressByRegionQuery } from './cqrs/query/address-by-region-query';
 import { ContactByTypeQuery } from './cqrs/query/contact-by-type-query';
-import { Event } from './cqrs/events/event';
 import { UserProjector } from './cqrs/projector/user-projector';
 import { EventStore } from './cqrs/events/store/event-store';
 import { UserAggregate } from './cqrs/aggregate/user-aggregate';
@@ -35,32 +34,40 @@ describe('CQRS Application', () => {
 
     projector.project(userId, events);
 
-    const addresses: Set<Address> = new Set([ 
-      new Address('New York', 'NY', '10001'),
-      new Address('Los Angeles', 'CA', '90001')
-    ]);
+    let updateUserCommand = new UpdateUserCommand(
+      userId,
+      new Set([ 
+        new Address('New York', 'NY', '10001'),
+        new Address('Los Angeles', 'CA', '90001')
+      ]), 
+      new Set([
+        new Contact('EMAIL', 'tom.sawyer@gmail.com'),
+        new Contact('EMAIL', 'tom.sawyer@rediff.com')
+      ]));
+    events.push(...userAggregate.handleUpdateUserCommand(updateUserCommand));
+    projector.project(userId, events);
 
-    const contacts: Set<Contact> = new Set([
-      new Contact('EMAIL', 'tom.sawyer@gmail.com'),
-      new Contact('EMAIL', 'tom.sawyer@rediff.com')
-    ]);
+    updateUserCommand = new UpdateUserCommand(
+      userId,
+      new Set([ 
+        new Address('New York', 'NY', '10001'),
+        new Address('Houston', 'TX', '77001')
+      ]), 
+      new Set([
+        new Contact('EMAIL', 'tom.sawyer@gmail.com'),
+        new Contact('PHONE', '555-555-1010')
+      ]));
+    events.push(...userAggregate.handleUpdateUserCommand(updateUserCommand));
+    projector.project(userId, events);
 
-    const updateUserCommand = new UpdateUserCommand(userId, addresses, contacts);
-    // events.push(userAggregate.handleUpdateUserCommand(updateUserCommand));
-    // projector.project(userId, events);
+    const contactByTypeQuery = new ContactByTypeQuery(userId, 'EMAIL');
+    expect(userProjection.handleContactByTypeQuery(contactByTypeQuery)).toStrictEqual(new Set([
+      new Contact('EMAIL', 'tom.sawyer@gmail.com')
+    ]));
 
-    // updateUserCommand = new UpdateUserCommand(userId, Stream.of(new Address('New York', 'NY', '10001'), new Address('Housten', 'TX', '77001'))
-    //     .collect(Collectors.toSet()),
-    //     Stream.of(new Contact('EMAIL', 'tom.sawyer@gmail.com'), new Contact('PHONE', '700-000-0001'))
-    //         .collect(Collectors.toSet()));
-    // events.addAll(userAggregate.handleUpdateUserCommand(updateUserCommand));
-    // projector.project(userId, events);
-
-    // ContactByTypeQuery contactByTypeQuery = new ContactByTypeQuery(userId, 'EMAIL');
-    // assertEquals(Stream.of(new Contact('EMAIL', 'tom.sawyer@gmail.com'))
-    //     .collect(Collectors.toSet()), userProjection.handle(contactByTypeQuery));
-    // AddressByRegionQuery addressByRegionQuery = new AddressByRegionQuery(userId, 'NY');
-    // assertEquals(Stream.of(new Address('New York', 'NY', '10001'))
-    //     .collect(Collectors.toSet()), userProjection.handle(addressByRegionQuery));
+    const addressByRegionQuery = new AddressByRegionQuery(userId, 'NY');
+    expect(userProjection.handleAddressByRegionQuery(addressByRegionQuery)).toStrictEqual(new Set([
+      new Address('New York', 'NY', '10001')
+    ]));
   });
 });
